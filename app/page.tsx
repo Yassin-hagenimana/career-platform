@@ -281,7 +281,7 @@ export default function Home() {
                 height={60}
                 className="max-h-12 w-auto object-contain"
               />
-            </div>
+            </div>*/}
             <div className="bg-white p-4 rounded-lg shadow-sm h-24 w-full flex items-center justify-center">
               <Image
                 src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120"
@@ -299,7 +299,7 @@ export default function Home() {
                 height={60}
                 className="max-h-12 w-auto object-contain"
               />
-            </div> */}
+            </div> 
             <div className="bg-white p-4 rounded-lg shadow-sm h-24 w-full flex items-center justify-center">
               <Image
                 src="https://upload.wikimedia.org/wikipedia/commons/1/17/Coat_of_arms_of_Rwanda.svg?height=100&width=120"
