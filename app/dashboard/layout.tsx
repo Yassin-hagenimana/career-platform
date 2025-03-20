@@ -1,72 +1,78 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { Loader2} from "lucide-react"
 import { LayoutDashboard, Briefcase, Users, Settings, LogOut, BookOpen, Calendar, User } from "lucide-react"
 import { useSupabase } from "@/hooks/use-Supabase" // Ensure this hook provides supabase context
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState(null)
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const { supabase } = useSupabase()
 
-  // Use effect to check session and fetch profile once
   useEffect(() => {
-    const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setSession(session)
+    const fetchSession = async () => {
+      setLoading(true) // Start loading
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+      
+      if (sessionError) {
+        console.error("Session fetch error:", sessionError)
+        setLoading(false)
+        return
+      }
 
-      if (!session) {
-        router.push("/auth/login?redirect=/dashboard") // Redirect if not logged in
+      const currentSession = sessionData.session
+
+      if (!currentSession) {
+        router.replace("/auth/login?redirect=/dashboard")
+        setLoading(false)
+        return
+      }
+
+      setSession(currentSession)
+
+      const { data: userProfile, error: profileError } = await supabase
+        .from("users")
+        .select("name, avatar_url")
+        .eq("id", currentSession.user.id)
+        .single()
+
+      if (profileError) {
+        console.error("Profile fetch error:", profileError)
       } else {
-        const { data: userProfile } = await supabase
-          .from("users")
-          .select("name, avatar_url")
-          .eq("id", session.user.id)
-          .single()
-
         setProfile(userProfile)
       }
+
       setLoading(false)
     }
 
-    getSession()
+    fetchSession()
 
-    // Listen for auth state changes
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setSession(session)
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, updatedSession) => {
+      setSession(updatedSession)
 
-      if (!session) {
-        router.push("/auth/login?redirect=/dashboard") // Redirect if not logged in
-      } else {
-        const { data: userProfile } = await supabase
-          .from("users")
-          .select("name, avatar_url")
-          .eq("id", session.user.id)
-          .single()
-
-        setProfile(userProfile)
+      if (!updatedSession) {
+        router.replace("/auth/login?redirect=/dashboard")
       }
     })
 
-    // No need for manual cleanup
-
+    return () => {
+      authListener.subscription.unsubscribe()
+    }
   }, [supabase, router])
 
-  // If loading or session not found, return a loading state
   if (loading) {
-    return <div>Loading...</div>
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
   }
 
-  // Navigation items (No session check here, just rendering links)
   const navItems = [
     { title: "Dashboard", href: "/dashboard", icon: "layout-dashboard" },
     { title: "Profile", href: "/dashboard/profile", icon: "user" },
@@ -110,14 +116,6 @@ export default function DashboardLayout({
                 )
               })}
             </nav>
-           {/* <div className="p-4 mt-auto">
-              <form action="/auth/signout" method="post">
-                <Button variant="ghost" className="w-full justify-start text-muted-foreground" type="submit">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Log out
-                </Button>
-              </form>
-            </div> */}
           </div>
         </aside>
         <main className="flex-1 p-6">{children}</main>
@@ -125,4 +123,3 @@ export default function DashboardLayout({
     </div>
   )
 }
-

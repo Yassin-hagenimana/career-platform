@@ -256,7 +256,7 @@ export default async function DashboardCoursesPage() {
                   </CardContent>
                   <CardFooter className="p-4 flex justify-between items-center border-t">
                     <Button asChild>
-                      <Link href={`/courses/${enrollment.courses.id}/learn`}>
+                      <Link href={`/courses/${enrollment.courses.id}`}>
                         {enrollment.progress > 0 ? "Continue Learning" : "Start Learning"}
                       </Link>
                     </Button>
