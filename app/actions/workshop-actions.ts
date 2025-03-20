@@ -1,0 +1,121 @@
+"use server"
+
+import { createClientServer } from "@/lib/supabase"
+import { revalidatePath } from "next/cache"
+
+export async function createWorkshop(formData: FormData) {
+  const title = formData.get("title") as string
+  const description = formData.get("description") as string
+  const date = formData.get("date") as string
+  const time = formData.get("time") as string
+  const location = formData.get("location") as string
+  const isVirtual = formData.get("isVirtual") === "true"
+  const price = formData.get("price") as string
+  const capacity = formData.get("capacity") as string
+  const category = formData.get("category") as string
+  const imageUrl = formData.get("imageUrl") as string
+  const userId = formData.get("userId") as string
+  const instructorName = formData.get("instructorName") as string
+
+  if (!title || !description || !date || !time || !category || !userId || !instructorName) {
+    return { error: "Missing required fields" }
+  }
+
+  const supabase = createClientServer()
+
+  try {
+    const { data, error } = await supabase
+      .from("workshops")
+      .insert({
+        title,
+        description,
+        date,
+        time,
+        location: location || (isVirtual ? "Online" : ""),
+        is_virtual: isVirtual,
+        price: Number(price || 0),
+        capacity: Number(capacity || 20),
+        registered_count: 0,
+        category,
+        image_url: imageUrl || null,
+        user_id: userId,
+        instructor_name: instructorName,
+      })
+      .select()
+
+    if (error) throw error
+
+    revalidatePath("/dashboard/workshops")
+    revalidatePath("/workshops")
+
+    return { success: true, workshopId: data[0].id }
+  } catch (error: any) {
+    console.error("Error creating workshop:", error)
+    return { error: error.message || "Failed to create workshop" }
+  }
+}
+
+export async function registerForWorkshop(formData: FormData) {
+  const workshopId = formData.get("workshopId") as string
+  const userId = formData.get("userId") as string
+  const name = formData.get("name") as string
+  const email = formData.get("email") as string
+  const phone = formData.get("phone") as string
+  const organization = formData.get("organization") as string
+  const attendanceMode = formData.get("attendanceMode") as string
+  const dietaryRequirements = formData.get("dietaryRequirements") as string
+  const specialRequests = formData.get("specialRequests") as string
+
+  if (!workshopId || !userId || !name || !email || !phone || !attendanceMode) {
+    return { error: "Missing required fields" }
+  }
+
+  const supabase = createClientServer()
+
+  try {
+    // Check if user is already registered
+    const { data: existingReg, error: checkError } = await supabase
+      .from("workshop_registrations")
+      .select("id")
+      .eq("workshop_id", workshopId)
+      .eq("user_id", userId)
+      .maybeSingle()
+
+    if (checkError) throw checkError
+
+    if (existingReg) {
+      return { error: "You are already registered for this workshop" }
+    }
+
+    // Register for the workshop
+    const { data, error } = await supabase
+      .from("workshop_registrations")
+      .insert({
+        workshop_id: workshopId,
+        user_id: userId,
+        name,
+        email,
+        phone,
+        organization: organization || null,
+        attendance_mode: attendanceMode,
+        dietary_requirements: dietaryRequirements || null,
+        special_requests: specialRequests || null,
+        status: "confirmed",
+      })
+      .select()
+
+    if (error) throw error
+
+    // Increment the registered count
+    await supabase.rpc("increment_workshop_registrations", { workshop_id: workshopId })
+
+    revalidatePath("/dashboard/workshops")
+    revalidatePath(`/workshops/${workshopId}`)
+
+    return { success: true, registrationId: data[0].id }
+  } catch (error: any) {
+    console.error("Error registering for workshop:", error)
+    return { error: error.message || "Failed to register for workshop" }
+  }
+}
+
