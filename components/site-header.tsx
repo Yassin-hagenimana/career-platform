@@ -27,6 +27,8 @@ const mainNav = [
   { name: "Jobs", href: "/jobs" },
   { name: "Mentors", href: "/mentors" },
   { name: "Community", href: "/community" },
+  { name: "Partners", href: "/partners" },
+
 ]
 
 export function SiteHeader() {

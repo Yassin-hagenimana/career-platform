@@ -10,7 +10,7 @@ export default function AboutPage() {
     {
       name: "Yassin Draxler",
       role: "Founder & CEO",
-      image: "/placeholder.png?height=300&width=300",
+      image: "/placeholder.svg?height=300&width=300",
       bio: "Sarah has over 15 years of experience in education and workforce development across Africa. Prior to founding this platform, she led education initiatives at the African Development Bank.",
     },
     {

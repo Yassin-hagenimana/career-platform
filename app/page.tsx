@@ -263,17 +263,17 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-12 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center justify-items-center">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center justify-items-center">
             {/* <div className="bg-white p-4 rounded-lg shadow-sm h-24 w-full flex items-center justify-center">
               <Image
-                src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120"
+                src="/placeholder.svg?height=100&width=120"
                 alt="Partner Logo 1"
                 width={120}
                 height={60}
                 className="max-h-12 w-auto object-contain"
               />
-            </div> */}
-            {/* <div className="bg-white p-4 rounded-lg shadow-sm h-24 w-full flex items-center justify-center">
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-sm h-24 w-full flex items-center justify-center">
               <Image
                 src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120"
                 alt="Partner Logo 2"
@@ -281,7 +281,7 @@ export default function Home() {
                 height={60}
                 className="max-h-12 w-auto object-contain"
               />
-            </div> */}
+            </div>
             <div className="bg-white p-4 rounded-lg shadow-sm h-24 w-full flex items-center justify-center">
               <Image
                 src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120"
@@ -299,10 +299,10 @@ export default function Home() {
                 height={60}
                 className="max-h-12 w-auto object-contain"
               />
-            </div>
+            </div> */}
             <div className="bg-white p-4 rounded-lg shadow-sm h-24 w-full flex items-center justify-center">
               <Image
-                src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120"
+                src="https://upload.wikimedia.org/wikipedia/commons/1/17/Coat_of_arms_of_Rwanda.svg?height=100&width=120"
                 alt="Partner Logo 5"
                 width={120}
                 height={60}

@@ -10,7 +10,7 @@ export default function PartnersPage() {
     {
       id: 1,
       name: "African Development Bank",
-      logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120",
+     // logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120",
       description: "Supporting economic development and social progress across Africa.",
       category: "Financial Institution",
       website: "https://example.com",
@@ -18,7 +18,7 @@ export default function PartnersPage() {
     {
       id: 2,
       name: "Tech4Africa",
-      logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120",
+    //  logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120",
       description: "Promoting technology education and digital skills across the continent.",
       category: "Technology",
       website: "https://example.com",
@@ -26,7 +26,7 @@ export default function PartnersPage() {
     {
       id: 3,
       name: "EcoVentures",
-      logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120",
+    //  logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120",
       description: "Investing in sustainable businesses and green initiatives in Africa.",
       category: "Venture Capital",
       website: "https://example.com",
@@ -34,7 +34,7 @@ export default function PartnersPage() {
     {
       id: 4,
       name: "AfriLearn",
-      logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120",
+    //  logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120",
       description: "Providing accessible education resources for students across Africa.",
       category: "Education",
       website: "https://example.com",
@@ -42,7 +42,7 @@ export default function PartnersPage() {
     {
       id: 5,
       name: "Pan-African Business Coalition",
-      logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120",
+   //   logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120",
       description: "Connecting businesses across Africa to foster economic growth and collaboration.",
       category: "Business Network",
       website: "https://example.com",
@@ -50,7 +50,7 @@ export default function PartnersPage() {
     {
       id: 6,
       name: "Youth Empowerment Initiative",
-      logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120",
+    //  logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120",
       description: "Dedicated to creating opportunities for young people across Africa.",
       category: "Non-Profit",
       website: "https://example.com",
@@ -58,7 +58,7 @@ export default function PartnersPage() {
     {
       id: 7,
       name: "African Innovation Hub",
-      logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120",
+  //    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Emblem_of_the_African_Union.svg/1200px-Emblem_of_the_African_Union.svg.png?height=100&width=120",
       description: "Supporting startups and innovation across the African continent.",
       category: "Innovation",
       website: "https://example.com",
