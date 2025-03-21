@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { useToast } from "@/hooks/use-toast"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { registerUser } from "@/app/actions/auth-actions"
 
 // List of African countries
 const africaCountries = [
@@ -97,6 +98,7 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState(initialFormState)
   const [errors, setErrors] = useState(initialErrorsState)
   const [isLoading, setIsLoading] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
   const router = useRouter()
   const { toast } = useToast()
 
@@ -109,6 +111,11 @@ export default function RegisterPage() {
     if (errors[name as keyof typeof errors]) {
       setErrors((prev) => ({ ...prev, [name]: "" }))
     }
+
+    // Clear server error when user makes changes
+    if (serverError) {
+      setServerError(null)
+    }
   }
 
   // Handle select changes
@@ -119,6 +126,11 @@ export default function RegisterPage() {
     if (errors[name as keyof typeof errors]) {
       setErrors((prev) => ({ ...prev, [name]: "" }))
     }
+
+    // Clear server error when user makes changes
+    if (serverError) {
+      setServerError(null)
+    }
   }
 
   // Handle checkbox changes
@@ -128,6 +140,11 @@ export default function RegisterPage() {
     // Clear error when user checks
     if (errors.agreeTerms) {
       setErrors((prev) => ({ ...prev, agreeTerms: "" }))
+    }
+
+    // Clear server error when user makes changes
+    if (serverError) {
+      setServerError(null)
     }
   }
 
@@ -197,29 +214,33 @@ export default function RegisterPage() {
     }
 
     setIsLoading(true)
+    setServerError(null)
 
     try {
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-          name: formData.name,
-          phoneNumber: formData.phoneNumber,
-          userType: formData.userType,
-          country: formData.country,
-        }),
+      console.log("Submitting registration form:", {
+        email: formData.email,
+        name: formData.name,
+        userType: formData.userType,
+        country: formData.country,
       })
 
-      const data = await response.json()
+      // Try using the server action directly instead of the API route
+      const result = await registerUser({
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
+        phoneNumber: formData.phoneNumber,
+        userType: formData.userType,
+        country: formData.country,
+      })
 
-      if (!response.ok) {
-        throw new Error(data.error || "Registration failed")
+      if (!result.success) {
+        console.error("Registration error:", result.error)
+        setServerError(result.error || "Registration failed")
+        throw new Error(result.error || "Registration failed")
       }
 
+      console.log("Registration successful")
       toast({
         title: "Success!",
         description: "Your account has been successfully created",
@@ -230,8 +251,8 @@ export default function RegisterPage() {
     } catch (error) {
       console.error("Registration error:", error)
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Registration failed",
+        title: "Registration Error",
+        description: error instanceof Error ? error.message : "Registration failed. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -262,6 +283,13 @@ export default function RegisterPage() {
             <TabsTrigger value="mentor">Mentor</TabsTrigger>
           </TabsList>
 
+          {serverError && (
+            <div className="mb-6 p-4 border border-red-300 bg-red-50 rounded-md text-red-800">
+              <p className="font-medium">Registration Error</p>
+              <p className="text-sm">{serverError}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Full Name */}
             <div className="space-y-2">
@@ -273,6 +301,7 @@ export default function RegisterPage() {
                 value={formData.name}
                 onChange={handleChange}
                 className={errors.name ? "border-red-500" : ""}
+                disabled={isLoading}
               />
               {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
             </div>
@@ -288,6 +317,7 @@ export default function RegisterPage() {
                 value={formData.email}
                 onChange={handleChange}
                 className={errors.email ? "border-red-500" : ""}
+                disabled={isLoading}
               />
               {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
             </div>
@@ -304,6 +334,7 @@ export default function RegisterPage() {
                   value={formData.password}
                   onChange={handleChange}
                   className={errors.password ? "border-red-500" : ""}
+                  disabled={isLoading}
                 />
                 {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
               </div>
@@ -318,6 +349,7 @@ export default function RegisterPage() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   className={errors.confirmPassword ? "border-red-500" : ""}
+                  disabled={isLoading}
                 />
                 {errors.confirmPassword && <p className="text-sm text-red-500">{errors.confirmPassword}</p>}
               </div>
@@ -333,6 +365,7 @@ export default function RegisterPage() {
                 value={formData.phoneNumber}
                 onChange={handleChange}
                 className={errors.phoneNumber ? "border-red-500" : ""}
+                disabled={isLoading}
               />
               {errors.phoneNumber && <p className="text-sm text-red-500">{errors.phoneNumber}</p>}
             </div>
@@ -340,7 +373,11 @@ export default function RegisterPage() {
             {/* Country */}
             <div className="space-y-2">
               <Label htmlFor="country">Country</Label>
-              <Select value={formData.country} onValueChange={(value) => handleSelectChange("country", value)}>
+              <Select
+                value={formData.country}
+                onValueChange={(value) => handleSelectChange("country", value)}
+                disabled={isLoading}
+              >
                 <SelectTrigger className={errors.country ? "border-red-500" : ""}>
                   <SelectValue placeholder="Select your country" />
                 </SelectTrigger>
@@ -362,6 +399,7 @@ export default function RegisterPage() {
                 checked={formData.agreeTerms}
                 onCheckedChange={handleCheckboxChange}
                 className={errors.agreeTerms ? "border-red-500" : ""}
+                disabled={isLoading}
               />
               <div className="space-y-1 leading-none">
                 <Label htmlFor="agreeTerms">
@@ -398,4 +436,3 @@ export default function RegisterPage() {
     </div>
   )
 }
-
