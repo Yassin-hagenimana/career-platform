@@ -16,7 +16,6 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "CareerEmpowers | Empowering Your Career Journey",
   description: "A platform for career development, mentorship, and job opportunities",
-    generator: 'v0.dev'
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
