@@ -1,15 +1,13 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
 import { ArrowLeft, CheckCircle2, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -18,20 +16,9 @@ import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/contexts/auth-context"
 import { useSupabase } from "@/hooks/use-Supabase"
 
-// Import the server action
 import { createMentorshipRequest } from "@/app/actions/mentor-actions"
 
-const mentorshipRequestSchema = z.object({
-  goals: z.string().min(50, { message: "Goals must be at least 50 characters." }),
-  experience: z.string().min(50, { message: "Experience must be at least 50 characters." }),
-  frequency: z.string().min(1, { message: "Please select a preferred frequency." }),
-  duration: z.string().min(1, { message: "Please select a preferred duration." }),
-  agreeTerms: z.boolean().refine((val) => val === true, {
-    message: "You must agree to the terms and conditions.",
-  }),
-})
-
-export default function MentorshipRequestPage() {
+const MentorshipRequestPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [mentor, setMentor] = useState<any>(null)
@@ -44,6 +31,69 @@ export default function MentorshipRequestPage() {
   const { toast } = useToast()
   const { user } = useAuth()
   const { supabase } = useSupabase()
+
+  const [formData, setFormData] = useState({
+    goals: "",
+    experience: "",
+    frequency: "",
+    duration: "",
+    agreeTerms: false,
+  })
+
+  const [errors, setErrors] = useState({
+    goals: "",
+    experience: "",
+    frequency: "",
+    duration: "",
+    agreeTerms: "",
+  })
+
+  const validateForm = () => {
+    const newErrors = {
+      goals: "",
+      experience: "",
+      frequency: "",
+      duration: "",
+      agreeTerms: "",
+    }
+
+    let isValid = true
+
+    if (formData.goals.length < 50) {
+      newErrors.goals = "Goals must be at least 50 characters."
+      isValid = false
+    }
+
+    if (formData.experience.length < 50) {
+      newErrors.experience = "Experience must be at least 50 characters."
+      isValid = false
+    }
+
+    if (!formData.frequency) {
+      newErrors.frequency = "Please select a preferred frequency."
+      isValid = false
+    }
+
+    if (!formData.duration) {
+      newErrors.duration = "Please select a preferred duration."
+      isValid = false
+    }
+
+    if (!formData.agreeTerms) {
+      newErrors.agreeTerms = "You must agree to the terms and conditions."
+      isValid = false
+    }
+
+    setErrors(newErrors)
+    return isValid
+  }
+
+  const handleInputChange = (field: string, value: string | boolean) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }))
+  }
 
   // Fetch mentor details
   useEffect(() => {
@@ -80,19 +130,13 @@ export default function MentorshipRequestPage() {
     fetchMentor()
   }, [mentorId, supabase])
 
-  const form = useForm<z.infer<typeof mentorshipRequestSchema>>({
-    resolver: zodResolver(mentorshipRequestSchema),
-    defaultValues: {
-      goals: "",
-      experience: "",
-      frequency: "",
-      duration: "",
-      agreeTerms: false,
-    },
-  })
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
 
-  // Replace the onSubmit function with this:
-  async function onSubmit(values: z.infer<typeof mentorshipRequestSchema>) {
+    if (!validateForm()) {
+      return
+    }
+
     if (!user) {
       toast({
         title: "Authentication required",
@@ -106,15 +150,15 @@ export default function MentorshipRequestPage() {
     setIsSubmitting(true)
 
     try {
-      const formData = new FormData()
-      formData.append("mentorId", mentorId)
-      formData.append("menteeId", user.id)
-      formData.append("goals", values.goals)
-      formData.append("experience", values.experience)
-      formData.append("frequency", values.frequency)
-      formData.append("duration", values.duration)
+      const formDataObj = new FormData()
+      formDataObj.append("mentorId", mentorId)
+      formDataObj.append("menteeId", user.id)
+      formDataObj.append("goals", formData.goals)
+      formDataObj.append("experience", formData.experience)
+      formDataObj.append("frequency", formData.frequency)
+      formDataObj.append("duration", formData.duration)
 
-      const result = await createMentorshipRequest(formData)
+      const result = await createMentorshipRequest(formDataObj)
 
       if (result.error) {
         toast({
@@ -256,173 +300,151 @@ export default function MentorshipRequestPage() {
         </Card>
       </div>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Mentorship Goals</CardTitle>
-              <CardDescription>Tell us what you hope to achieve through this mentorship</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <FormField
-                control={form.control}
-                name="goals"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>What are your goals for this mentorship?</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Describe what you hope to achieve and learn from this mentorship..."
-                        className="min-h-[150px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Be specific about what skills you want to develop or challenges you want to overcome
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Mentorship Goals</CardTitle>
+            <CardDescription>Tell us what you hope to achieve through this mentorship</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <label htmlFor="goals" className="text-sm font-medium">
+                What are your goals for this mentorship?
+              </label>
+              <Textarea
+                id="goals"
+                placeholder="Describe what you hope to achieve and learn from this mentorship..."
+                className="min-h-[150px]"
+                value={formData.goals}
+                onChange={(e) => handleInputChange("goals", e.target.value)}
               />
+              <p className="text-sm text-muted-foreground">
+                Be specific about what skills you want to develop or challenges you want to overcome
+              </p>
+              {errors.goals && <p className="text-sm text-destructive">{errors.goals}</p>}
+            </div>
 
-              <FormField
-                control={form.control}
-                name="experience"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>What is your current experience level?</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Describe your background, current role, and experience level..."
-                        className="min-h-[150px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      This helps the mentor understand your background and tailor their guidance
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
+            <div className="space-y-2">
+              <label htmlFor="experience" className="text-sm font-medium">
+                What is your current experience level?
+              </label>
+              <Textarea
+                id="experience"
+                placeholder="Describe your background, current role, and experience level..."
+                className="min-h-[150px]"
+                value={formData.experience}
+                onChange={(e) => handleInputChange("experience", e.target.value)}
               />
-            </CardContent>
-          </Card>
+              <p className="text-sm text-muted-foreground">
+                This helps the mentor understand your background and tailor their guidance
+              </p>
+              {errors.experience && <p className="text-sm text-destructive">{errors.experience}</p>}
+            </div>
+          </CardContent>
+        </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Mentorship Preferences</CardTitle>
-              <CardDescription>Tell us how you'd like to structure the mentorship</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <FormField
-                control={form.control}
-                name="frequency"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Preferred Meeting Frequency</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select preferred frequency" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="weekly">Weekly</SelectItem>
-                        <SelectItem value="biweekly">Bi-weekly</SelectItem>
-                        <SelectItem value="monthly">Monthly</SelectItem>
-                        <SelectItem value="as-needed">As needed</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>How often would you like to meet with your mentor?</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+        <Card>
+          <CardHeader>
+            <CardTitle>Mentorship Preferences</CardTitle>
+            <CardDescription>Tell us how you'd like to structure the mentorship</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <label htmlFor="frequency" className="text-sm font-medium">
+                Preferred Meeting Frequency
+              </label>
+              <Select value={formData.frequency} onValueChange={(value) => handleInputChange("frequency", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select preferred frequency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="biweekly">Bi-weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="as-needed">As needed</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-sm text-muted-foreground">How often would you like to meet with your mentor?</p>
+              {errors.frequency && <p className="text-sm text-destructive">{errors.frequency}</p>}
+            </div>
 
-              <FormField
-                control={form.control}
-                name="duration"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Preferred Mentorship Duration</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select preferred duration" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="1-month">1 month</SelectItem>
-                        <SelectItem value="3-months">3 months</SelectItem>
-                        <SelectItem value="6-months">6 months</SelectItem>
-                        <SelectItem value="ongoing">Ongoing</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>How long would you like the mentorship to last?</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <div className="space-y-2">
+              <label htmlFor="duration" className="text-sm font-medium">
+                Preferred Mentorship Duration
+              </label>
+              <Select value={formData.duration} onValueChange={(value) => handleInputChange("duration", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select preferred duration" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1-month">1 month</SelectItem>
+                  <SelectItem value="3-months">3 months</SelectItem>
+                  <SelectItem value="6-months">6 months</SelectItem>
+                  <SelectItem value="ongoing">Ongoing</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-sm text-muted-foreground">How long would you like the mentorship to last?</p>
+              {errors.duration && <p className="text-sm text-destructive">{errors.duration}</p>}
+            </div>
 
-              <div className="bg-muted p-4 rounded-lg flex items-start gap-3">
-                <Info className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-                <div className="text-sm text-muted-foreground">
-                  <p className="font-medium mb-1">Mentee Expectations</p>
-                  <p>As a mentee, you'll be expected to:</p>
-                  <ul className="list-disc pl-5 mt-2 space-y-1">
-                    <li>Come prepared to each session with specific questions or topics</li>
-                    <li>Be respectful of your mentor's time and expertise</li>
-                    <li>Follow through on any agreed-upon action items</li>
-                    <li>Provide feedback on the mentorship experience</li>
-                    <li>Give adequate notice if you need to reschedule a session</li>
-                  </ul>
-                </div>
+            <div className="bg-muted p-4 rounded-lg flex items-start gap-3">
+              <Info className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+              <div className="text-sm text-muted-foreground">
+                <p className="font-medium mb-1">Mentee Expectations</p>
+                <p>As a mentee, you'll be expected to:</p>
+                <ul className="list-disc pl-5 mt-2 space-y-1">
+                  <li>Come prepared to each session with specific questions or topics</li>
+                  <li>Be respectful of your mentor's time and expertise</li>
+                  <li>Follow through on any agreed-upon action items</li>
+                  <li>Provide feedback on the mentorship experience</li>
+                  <li>Give adequate notice if you need to reschedule a session</li>
+                </ul>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
+        </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Terms and Conditions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="bg-muted p-4 rounded-lg text-sm h-40 overflow-y-auto">
-                <p className="mb-2">By requesting mentorship, you agree to the following terms:</p>
-                <ol className="list-decimal pl-5 space-y-2">
-                  <li>All information provided is true and accurate to the best of your knowledge.</li>
-                  <li>You understand that mentors volunteer their time and expertise.</li>
-                  <li>You will respect the mentor's time and provide adequate notice for cancellations.</li>
-                  <li>You will maintain confidentiality of discussions with your mentor.</li>
-                  <li>You understand that the mentor may decline your request based on availability or fit.</li>
-                  <li>You will provide feedback on the mentorship experience when requested.</li>
-                </ol>
-              </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Terms and Conditions</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="bg-muted p-4 rounded-lg text-sm h-40 overflow-y-auto">
+              <p className="mb-2">By requesting mentorship, you agree to the following terms:</p>
+              <ol className="list-decimal pl-5 space-y-2">
+                <li>All information provided is true and accurate to the best of your knowledge.</li>
+                <li>You understand that mentors volunteer their time and expertise.</li>
+                <li>You will respect the mentor's time and provide adequate notice for cancellations.</li>
+                <li>You will maintain confidentiality of discussions with your mentor.</li>
+                <li>You understand that the mentor may decline your request based on availability or fit.</li>
+                <li>You will provide feedback on the mentorship experience when requested.</li>
+              </ol>
+            </div>
 
-              <FormField
-                control={form.control}
-                name="agreeTerms"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                    <FormControl>
-                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>I agree to the mentorship terms and conditions</FormLabel>
-                      <FormMessage />
-                    </div>
-                  </FormItem>
-                )}
+            <div className="flex flex-row items-start space-x-3 space-y-0">
+              <Checkbox
+                id="agreeTerms"
+                checked={formData.agreeTerms}
+                onCheckedChange={(checked) => handleInputChange("agreeTerms", checked === true)}
               />
-            </CardContent>
-            <CardFooter>
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? "Submitting Request..." : "Submit Mentorship Request"}
-              </Button>
-            </CardFooter>
-          </Card>
-        </form>
-      </Form>
+              <div className="space-y-1 leading-none">
+                <label htmlFor="agreeTerms" className="text-sm font-medium">
+                  I agree to the mentorship terms and conditions
+                </label>
+                {errors.agreeTerms && <p className="text-sm text-destructive">{errors.agreeTerms}</p>}
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting Request..." : "Submit Mentorship Request"}
+            </Button>
+          </CardFooter>
+        </Card>
+      </form>
     </div>
   )
 }
+
+export default MentorshipRequestPage
 
