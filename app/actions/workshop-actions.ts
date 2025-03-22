@@ -119,3 +119,55 @@ export async function registerForWorkshop(formData: FormData) {
   }
 }
 
+// Add the new deleteWorkshop server action
+export async function deleteWorkshop(formData: FormData) {
+  const workshopId = formData.get("workshopId") as string
+  const userId = formData.get("userId") as string
+
+  if (!workshopId || !userId) {
+    return { error: "Missing required fields" }
+  }
+
+  const supabase = createClientServer()
+
+  try {
+    // First check if the workshop belongs to the user
+    const { data: workshop, error: checkError } = await supabase
+      .from("workshops")
+      .select("id")
+      .eq("id", workshopId)
+      .eq("user_id", userId)
+      .maybeSingle()
+
+    if (checkError) throw checkError
+
+    if (!workshop) {
+      return { error: "Workshop not found or you don't have permission to delete it" }
+    }
+
+    // Delete any registrations for this workshop
+    const { error: regDeleteError } = await supabase
+      .from("workshop_registrations")
+      .delete()
+      .eq("workshop_id", workshopId)
+
+    if (regDeleteError) {
+      console.error("Error deleting workshop registrations:", regDeleteError)
+      // Continue with workshop deletion even if registrations deletion fails
+    }
+
+    // Delete the workshop
+    const { error: deleteError } = await supabase.from("workshops").delete().eq("id", workshopId)
+
+    if (deleteError) throw deleteError
+
+    revalidatePath("/dashboard/workshops")
+    revalidatePath("/workshops")
+
+    return { success: true }
+  } catch (error: any) {
+    console.error("Error deleting workshop:", error)
+    return { error: error.message || "Failed to delete workshop" }
+  }
+}
+
