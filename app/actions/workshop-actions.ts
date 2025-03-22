@@ -55,6 +55,74 @@ export async function createWorkshop(formData: FormData) {
   }
 }
 
+export async function updateWorkshop(formData: FormData) {
+  const workshopId = formData.get("workshopId") as string
+  const title = formData.get("title") as string
+  const description = formData.get("description") as string
+  const date = formData.get("date") as string
+  const time = formData.get("time") as string
+  const location = formData.get("location") as string
+  const isVirtual = formData.get("isVirtual") === "true"
+  const price = formData.get("price") as string
+  const capacity = formData.get("capacity") as string
+  const category = formData.get("category") as string
+  const imageUrl = formData.get("imageUrl") as string
+  const userId = formData.get("userId") as string
+  const instructorName = formData.get("instructorName") as string
+
+  if (!workshopId || !title || !description || !date || !time || !category || !userId || !instructorName) {
+    return { error: "Missing required fields" }
+  }
+
+  const supabase = createClientServer()
+
+  try {
+    // First check if the workshop belongs to the user
+    const { data: workshop, error: checkError } = await supabase
+      .from("workshops")
+      .select("id")
+      .eq("id", workshopId)
+      .eq("user_id", userId)
+      .maybeSingle()
+
+    if (checkError) throw checkError
+
+    if (!workshop) {
+      return { error: "Workshop not found or you don't have permission to edit it" }
+    }
+
+    // Update the workshop
+    const { data, error } = await supabase
+      .from("workshops")
+      .update({
+        title,
+        description,
+        date,
+        time,
+        location: location || (isVirtual ? "Online" : ""),
+        is_virtual: isVirtual,
+        price: Number(price || 0),
+        capacity: Number(capacity || 20),
+        category,
+        image_url: imageUrl || null,
+        instructor_name: instructorName,
+      })
+      .eq("id", workshopId)
+      .select()
+
+    if (error) throw error
+
+    revalidatePath("/dashboard/workshops")
+    revalidatePath(`/workshops/${workshopId}`)
+    revalidatePath(`/dashboard/workshops/${workshopId}/edit`)
+
+    return { success: true, workshopId: data[0].id }
+  } catch (error: any) {
+    console.error("Error updating workshop:", error)
+    return { error: error.message || "Failed to update workshop" }
+  }
+}
+
 export async function registerForWorkshop(formData: FormData) {
   const workshopId = formData.get("workshopId") as string
   const userId = formData.get("userId") as string
@@ -119,7 +187,6 @@ export async function registerForWorkshop(formData: FormData) {
   }
 }
 
-// Add the new deleteWorkshop server action
 export async function deleteWorkshop(formData: FormData) {
   const workshopId = formData.get("workshopId") as string
   const userId = formData.get("userId") as string
