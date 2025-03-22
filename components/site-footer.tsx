@@ -64,19 +64,19 @@ export function SiteFooter() {
         <div className="space-y-4">
           <h3 className="font-semibold text-lg">Support</h3>
           <nav className="flex flex-col space-y-2">
-            <Link href="/help" className="text-muted-foreground hover:text-primary text-sm">
+            <Link href="#" className="text-muted-foreground hover:text-primary text-sm">
               Help Center
             </Link>
-            <Link href="/faq" className="text-muted-foreground hover:text-primary text-sm">
+            <Link href="#" className="text-muted-foreground hover:text-primary text-sm">
               FAQs
             </Link>
             <Link href="/contact" className="text-muted-foreground hover:text-primary text-sm">
               Contact Us
             </Link>
-            <Link href="/privacy" className="text-muted-foreground hover:text-primary text-sm">
+            <Link href="#" className="text-muted-foreground hover:text-primary text-sm">
               Privacy Policy
             </Link>
-            <Link href="/terms" className="text-muted-foreground hover:text-primary text-sm">
+            <Link href="#" className="text-muted-foreground hover:text-primary text-sm">
               Terms of Service
             </Link>
           </nav>
@@ -115,13 +115,13 @@ export function SiteFooter() {
           © {new Date().getFullYear()} CareerEmpowers. All rights reserved.
         </p>
         <div className="flex items-center gap-4">
-          <Link href="/privacy" className="text-sm text-muted-foreground hover:text-primary">
+          <Link href="#" className="text-sm text-muted-foreground hover:text-primary">
             Privacy
           </Link>
-          <Link href="/terms" className="text-sm text-muted-foreground hover:text-primary">
+          <Link href="#" className="text-sm text-muted-foreground hover:text-primary">
             Terms
           </Link>
-          <Link href="/cookies" className="text-sm text-muted-foreground hover:text-primary">
+          <Link href="#" className="text-sm text-muted-foreground hover:text-primary">
             Cookies
           </Link>
         </div>
