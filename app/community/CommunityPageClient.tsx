@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 import { MessageSquare, Eye, ThumbsUp, Clock, Filter, Search } from "lucide-react"
+import { Loader2 } from "lucide-react"
 
 export default function CommunityPageClient({
   discussions: initialDiscussions,
@@ -63,6 +64,14 @@ export default function CommunityPageClient({
 
     fetchDiscussions()
   }, [supabase, toast, category, searchQuery])
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
 
   return (
     <div className="container py-10 px-4 md:px-6">
