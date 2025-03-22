@@ -273,6 +273,9 @@ export default async function MentorsPage({
                       <CardDescription className="line-clamp-1">
                         {mentor.profession || mentor.profiles?.email} {mentor.company ? `at ${mentor.company}` : ""}
                       </CardDescription>
+                      <CardDescription className="line-clamp-1 capitalize">
+                     From {mentor.profiles?.country || ""}
+                     </CardDescription>
                     </div>
                     <div className="mt-4 flex flex-wrap gap-1 justify-center">
                       {expertiseArray.slice(0, 3).map((skill, i) => (
