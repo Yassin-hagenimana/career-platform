@@ -55,7 +55,7 @@ export function SiteFooter() {
             <Link href="/community" className="text-muted-foreground hover:text-primary text-sm">
               Community
             </Link>
-            <Link href="/mentorship" className="text-muted-foreground hover:text-primary text-sm">
+            <Link href="/mentors" className="text-muted-foreground hover:text-primary text-sm">
               Mentorship
             </Link>
           </nav>
