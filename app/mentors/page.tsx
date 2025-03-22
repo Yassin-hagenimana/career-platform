@@ -20,25 +20,25 @@ async function getMentors() {
   try {
     // Fetch all mentors with user data - temporarily remove is_approved filter to see if any mentors exist
     const { data: mentors, error } = await supabase.from("mentors").select(`
-        id,
-        user_id,
-        expertise,
-        experience_years,
-        bio,
-        hourly_rate,
-        availability,
-        created_at,
-        profession,
-        company,
-        is_approved,
-        profiles (
-          id,
-          full_name,
-          avatar_url,
-          title,
-          location
-        )
-      `)
+    id,
+    user_id,
+    expertise,
+    experience_years,
+    bio,
+    hourly_rate,
+    availability,
+    created_at,
+    profession,
+    company,
+    is_approved,
+    profiles:user_id (
+      id,
+      name,
+      avatar_url,
+      email,
+      country
+    )
+  `)
     // Comment out the is_approved filter temporarily to see all mentors
     // .eq("is_approved", true)
 
@@ -89,7 +89,7 @@ export default async function MentorsPage({
 
   // Filter mentors based on search parameters
   const filteredMentors = mentors.filter((mentor) => {
-    const mentorName = mentor.profiles?.full_name || ""
+    const mentorName = mentor.profiles?.name || ""
     const mentorProfession = mentor.profession || ""
     const mentorCompany = mentor.company || ""
 
@@ -257,21 +257,21 @@ export default async function MentorsPage({
                         {mentor.profiles?.avatar_url ? (
                           <Image
                             src={mentor.profiles.avatar_url || "/placeholder.svg?height=96&width=96"}
-                            alt={mentor.profiles.full_name || "Mentor"}
+                            alt={mentor.profiles.name || "Mentor"}
                             fill
                             className="object-cover"
                           />
                         ) : (
                           <div className="h-full w-full flex items-center justify-center bg-primary/10 text-primary text-2xl font-bold">
-                            {mentor.profiles?.full_name?.charAt(0) || "M"}
+                            {mentor.profiles?.name?.charAt(0) || "M"}
                           </div>
                         )}
                       </div>
                     </div>
                     <div className="text-center mt-3">
-                      <CardTitle className="text-xl">{mentor.profiles?.full_name || "Anonymous Mentor"}</CardTitle>
+                      <CardTitle className="text-xl">{mentor.profiles?.name || "Anonymous Mentor"}</CardTitle>
                       <CardDescription className="line-clamp-1">
-                        {mentor.profession || mentor.profiles?.title} {mentor.company ? `at ${mentor.company}` : ""}
+                        {mentor.profession || mentor.profiles?.email} {mentor.company ? `at ${mentor.company}` : ""}
                       </CardDescription>
                     </div>
                     <div className="mt-4 flex flex-wrap gap-1 justify-center">
@@ -306,4 +306,3 @@ export default async function MentorsPage({
     </div>
   )
 }
-
