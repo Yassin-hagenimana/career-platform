@@ -39,32 +39,13 @@ async function getMentors() {
       country
     )
   `)
-    // Comment out the is_approved filter temporarily to see all mentors
-    // .eq("is_approved", true)
-
+ 
     if (error) {
       console.error("Error fetching mentors:", error)
       return []
     }
 
-    console.log("Fetched mentors:", mentors?.length || 0)
-
-    // Log the first mentor to see its structure
-    if (mentors && mentors.length > 0) {
-      console.log("First mentor sample:", {
-        id: mentors[0].id,
-        user_id: mentors[0].user_id,
-        expertise: mentors[0].expertise,
-        is_approved: mentors[0].is_approved,
-        profile: mentors[0].profiles,
-      })
-    }
-
-    // Filter approved mentors on the client side for debugging
     const approvedMentors = mentors?.filter((mentor) => mentor.is_approved === true) || []
-    console.log("Approved mentors:", approvedMentors.length)
-
-    // Return all mentors for now to debug
     return mentors || []
   } catch (error) {
     console.error("Error fetching mentors:", error)
@@ -83,9 +64,6 @@ export default async function MentorsPage({
 
   // Fetch mentors
   const mentors = await getMentors()
-
-  // Log the total number of mentors fetched
-  console.log(`Total mentors fetched: ${mentors.length}`)
 
   // Filter mentors based on search parameters
   const filteredMentors = mentors.filter((mentor) => {
