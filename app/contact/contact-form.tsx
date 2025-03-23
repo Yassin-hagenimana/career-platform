@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { submitContactForm } from "@/app/actions/contact-actions"
 import { toast } from "@/components/ui/use-toast"
-
+import { useRouter } from "next/navigation"
 export function ContactForm() {
+    const router = useRouter()
   // Form state
   const [formData, setFormData] = useState({
     name: "",
@@ -120,7 +121,7 @@ export function ContactForm() {
       if (result.success) {
         toast({
           title: "Message sent",
-          description: result.message || "Thank you for contacting us. We'll get back to you soon.",
+          description: "Thank you for contacting us. We'll get back to you soon.",
         })
 
         // Reset form
@@ -130,10 +131,11 @@ export function ContactForm() {
           subject: "",
           message: "",
         })
+        router.push("/")
       } else {
         toast({
           title: "Error",
-          description: result.message || "Failed to send your message. Please try again.",
+          description: "Failed to send your message. Please try again.",
           variant: "destructive",
         })
 

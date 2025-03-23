@@ -17,7 +17,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/contexts/auth-context"
 import { useSupabase } from "@/hooks/use-Supabase"
 
-// Update the mainNav array to include "Mentors"
 const mainNav = [
   { name: "Home", href: "/" },
   { name: "About Us", href: "/about" },
@@ -28,6 +27,7 @@ const mainNav = [
   { name: "Mentors", href: "/mentors" },
   { name: "Community", href: "/community" },
   { name: "Partners", href: "/partners" },
+  { name: "Contact Us", href: "/contact" },
 
 ]
 
