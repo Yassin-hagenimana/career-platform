@@ -74,6 +74,11 @@ export default function DashboardNav({ activeItem = "dashboard" }: DashboardNavP
       icon: FileText,
     },
     {
+      title: "Contact Messages",
+      href: "/dashboard/contact-messages",
+      icon: MessageSquare,
+    },
+    {
       title: "Settings",
       href: "/dashboard/settings",
       icon: Settings,

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Loader2} from "lucide-react"
+import { Loader2, MessageSquare} from "lucide-react"
 import { LayoutDashboard, Briefcase, Users, Settings, LogOut, BookOpen, Calendar, User } from "lucide-react"
 import { useSupabase } from "@/hooks/use-Supabase" // Ensure this hook provides supabase context
 
@@ -80,7 +80,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { title: "Jobs", href: "/dashboard/jobs", icon: "briefcase" },
     { title: "Courses", href: "/dashboard/courses", icon: "book-open" },
     { title: "Workshops", href: "/dashboard/workshops", icon: "calendar" },
+    {title: "Contact Messages",href: "/dashboard/contact-messages",icon: MessageSquare,
+    },
     { title: "Settings", href: "/dashboard/settings", icon: "settings" },
+
   ]
 
   const iconMap = {
