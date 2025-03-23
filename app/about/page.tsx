@@ -109,58 +109,55 @@ export default function AboutPage() {
               </div>
             </div>
             <div className="pt-4">
-              <h3 className="text-xl font-semibold mb-3">Our Journey</h3>
-              <div className="space-y-6">
-                <div className="flex gap-4">
-                  <div className="bg-primary/10 text-primary font-bold rounded-full h-10 w-10 flex items-center justify-center shrink-0">
-                    2020
-                  </div>
-                  <div>
-                    <h4 className="font-medium">Platform Launch</h4>
-                    <p className="text-muted-foreground">
-                      Started with basic skills training and job listings for three countries: Kenya, Nigeria, and
-                      Ghana.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="bg-primary/10 text-primary font-bold rounded-full h-10 w-10 flex items-center justify-center shrink-0">
-                    2021
-                  </div>
-                  <div>
-                    <h4 className="font-medium">Expansion of Services</h4>
-                    <p className="text-muted-foreground">
-                      Added mentorship programs and funding opportunities for entrepreneurs. Expanded to five more
-                      countries.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="bg-primary/10 text-primary font-bold rounded-full h-10 w-10 flex items-center justify-center shrink-0">
-                    2022
-                  </div>
-                  <div>
-                    <h4 className="font-medium">Community Growth</h4>
-                    <p className="text-muted-foreground">
-                      Reached 100,000 users and established partnerships with major employers and educational
-                      institutions.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="bg-primary/10 text-primary font-bold rounded-full h-10 w-10 flex items-center justify-center shrink-0">
-                    2023
-                  </div>
-                  <div>
-                    <h4 className="font-medium">Today</h4>
-                    <p className="text-muted-foreground">
-                      Serving youth across 15 African countries with comprehensive career development resources and a
-                      thriving community.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+  <h3 className="text-xl font-semibold mb-3">Our Journey</h3>
+  <div className="space-y-6">
+    <div className="flex gap-4">
+      <div className="bg-primary/10 text-primary font-bold rounded-full h-10 w-10 flex items-center justify-center shrink-0">
+        2023
+      </div>
+      <div>
+        <h4 className="font-medium">Platform Launch</h4>
+        <p className="text-muted-foreground">
+          Started with basic skills training and job listings for one country Rwanda
+        </p>
+      </div>
+    </div>
+    <div className="flex gap-4">
+      <div className="bg-primary/10 text-primary font-bold rounded-full h-10 w-10 flex items-center justify-center shrink-0">
+        2024
+      </div>
+      <div>
+        <h4 className="font-medium">Expansion of Services</h4>
+        <p className="text-muted-foreground">
+          Added mentorship programs and funding opportunities for entrepreneurs. Expanded to five more countries.
+        </p>
+      </div>
+    </div>
+    <div className="flex gap-4">
+      <div className="bg-primary/10 text-primary font-bold rounded-full h-10 w-10 flex items-center justify-center shrink-0">
+        2025
+      </div>
+      <div>
+        <h4 className="font-medium">Community Growth</h4>
+        <p className="text-muted-foreground">
+          Reaching 100,000 users and establish partnerships with major employers and educational institutions.
+        </p>
+      </div>
+    </div>
+    <div className="flex gap-4">
+      <div className="bg-primary/10 text-primary font-bold rounded-full h-10 w-10 flex items-center justify-center shrink-0">
+        2026
+      </div>
+      <div>
+        <h4 className="font-medium">Future</h4>
+        <p className="text-muted-foreground">
+          Serving youth across 15 African countries with comprehensive career development resources and a thriving community.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
           </TabsContent>
 
           <TabsContent value="vision" className="space-y-6">
