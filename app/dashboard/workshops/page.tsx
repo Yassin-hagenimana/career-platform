@@ -84,14 +84,7 @@ async function getUserRegistrations(userId: string) {
       return []
     }
 
-    // Format the data to match the expected structure
-    const formattedRegistrations = registrations.map((registration) => ({
-      id: registration.id,
-      created_at: registration.created_at,
-      workshops: registration.workshop,
-    }))
-
-    return formattedRegistrations || []
+    return registrations || []
   } catch (error) {
     console.error("Error in getUserRegistrations:", error)
     return []
@@ -118,8 +111,8 @@ export default async function DashboardWorkshopsPage() {
   const pastWorkshops = workshops.filter((workshop) => new Date(workshop.date) < now)
 
   // Filter registrations into upcoming and past
-  const upcomingRegistrations = registrations.filter((reg) => new Date(reg.workshops.date) >= now)
-  const pastRegistrations = registrations.filter((reg) => new Date(reg.workshops.date) < now)
+  const upcomingRegistrations = registrations.filter((reg) => new Date(reg.workshop.date) >= now)
+  const pastRegistrations = registrations.filter((reg) => new Date(reg.workshop.date) < now)
 
   return (
     <div className="space-y-6">
@@ -202,7 +195,13 @@ export default async function DashboardWorkshopsPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {upcomingRegistrations.map((registration) => (
-                  <WorkshopCard key={registration.id} workshop={registration.workshops} isRegistration={true} />
+                  <WorkshopCard
+                    key={registration.id}
+                    workshop={registration.workshop}
+                    registrationId={registration.id}
+                    userId={userId}
+                    isRegistration={true}
+                  />
                 ))}
               </div>
             )}
@@ -215,7 +214,9 @@ export default async function DashboardWorkshopsPage() {
                 {pastRegistrations.map((registration) => (
                   <WorkshopCard
                     key={registration.id}
-                    workshop={registration.workshops}
+                    workshop={registration.workshop}
+                    registrationId={registration.id}
+                    userId={userId}
                     isRegistration={true}
                     isPast={true}
                   />
@@ -228,3 +229,4 @@ export default async function DashboardWorkshopsPage() {
     </div>
   )
 }
+

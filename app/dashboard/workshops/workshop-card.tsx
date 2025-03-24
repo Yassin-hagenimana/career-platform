@@ -1,15 +1,18 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
-import { Calendar, Edit, Eye, MapPin, Users } from "lucide-react"
+import { Calendar, Edit, Eye, MapPin, Trash, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { DeleteWorkshopButton } from "./delete-workshop-button"
+import { CancelRegistrationDialog } from "./cancel-registration-dialog"
 
 interface WorkshopCardProps {
   workshop: any
   userId?: string
+  registrationId?: string
   isCreator?: boolean
   isRegistration?: boolean
   isPast?: boolean
@@ -18,10 +21,13 @@ interface WorkshopCardProps {
 export function WorkshopCard({
   workshop,
   userId,
+  registrationId,
   isCreator = false,
   isRegistration = false,
   isPast = false,
 }: WorkshopCardProps) {
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
+
   // Format date
   const formattedDate = new Date(workshop.date).toLocaleDateString("en-US", {
     weekday: "long",
@@ -89,10 +95,28 @@ export function WorkshopCard({
               <DeleteWorkshopButton workshopId={workshop.id} userId={userId} workshopTitle={workshop.title} />
             </>
           )}
-          {isRegistration && !isPast && (
-            <Button variant="outline" size="sm" className="text-destructive">
-              Cancel
-            </Button>
+          {isRegistration && !isPast && userId && registrationId && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-destructive"
+                onClick={() => setShowCancelDialog(true)}
+              >
+                <Trash className="mr-2 h-4 w-4" />
+                Cancel
+              </Button>
+
+              {showCancelDialog && (
+                <CancelRegistrationDialog
+                  registrationId={registrationId}
+                  userId={userId}
+                  workshopTitle={workshop.title}
+                  isOpen={showCancelDialog}
+                  onOpenChange={setShowCancelDialog}
+                />
+              )}
+            </>
           )}
         </div>
       </CardFooter>

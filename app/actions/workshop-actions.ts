@@ -238,3 +238,70 @@ export async function deleteWorkshop(formData: FormData) {
   }
 }
 
+// Add the cancelRegistration function
+export async function cancelRegistration(formData: FormData) {
+  const registrationId = formData.get("registrationId") as string
+  const userId = formData.get("userId") as string
+
+  if (!registrationId || !userId) {
+    return { error: "Missing required fields" }
+  }
+
+  const supabase = createClientServer()
+
+  try {
+    // First check if the registration belongs to the user
+    const { data: registration, error: checkError } = await supabase
+      .from("workshop_registrations")
+      .select("id, workshop_id")
+      .eq("id", registrationId)
+      .eq("user_id", userId)
+      .maybeSingle()
+
+    if (checkError) throw checkError
+
+    if (!registration) {
+      return { error: "Registration not found or you don't have permission to cancel it" }
+    }
+
+    // Delete the registration
+    const { error: deleteError } = await supabase.from("workshop_registrations").delete().eq("id", registrationId)
+
+    if (deleteError) throw deleteError
+
+    // Decrement the registered count
+    try {
+      // Check if the function exists
+      const { error: funcCheckError } = await supabase.rpc("decrement_workshop_registration_count", {
+        workshop_id: registration.workshop_id,
+      })
+
+      if (funcCheckError) {
+        console.error("Error with decrement function, falling back to direct update:", funcCheckError)
+
+        // Fallback: directly update the count
+        const { error: updateError } = await supabase
+          .from("workshops")
+          .update({
+            registered_count: supabase.rpc("greatest", { x: 0, y: supabase.raw("registered_count - 1") }),
+          })
+          .eq("id", registration.workshop_id)
+
+        if (updateError) {
+          console.error("Error updating workshop registration count:", updateError)
+        }
+      }
+    } catch (error) {
+      console.error("Error decrementing registration count:", error)
+      // Continue even if this fails
+    }
+
+    revalidatePath("/dashboard/workshops")
+    revalidatePath(`/workshops/${registration.workshop_id}`)
+
+    return { success: true }
+  } catch (error: any) {
+    console.error("Error canceling registration:", error)
+    return { error: error.message || "Failed to cancel registration" }
+  }
+}
