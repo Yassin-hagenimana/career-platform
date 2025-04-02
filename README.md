@@ -1,4 +1,4 @@
-# Next.js Project - Beginner's Guide
+# Next.js Project - Installation Guide
 
 This is a project created using [Next.js](https://nextjs.org), a framework for building web applications with React.
 
